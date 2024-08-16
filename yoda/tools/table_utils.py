@@ -1,10 +1,12 @@
 import os
 import glob
+from PIL import Image
 from pdf2image import convert_from_path
-from paddleocr import PaddleOCR,  PPStructure
+from ultralyticsplus import YOLO
+# from paddleocr import PaddleOCR,  PPStructure
 
-ocr = PaddleOCR(use_angle_cls=False, lang='en') # need to run only once to download and load model into memory
-layout_engine = PPStructure(recovery=False, layout=True, table=True, ocr=False, show_log=False) # need to run only once to download and load model into memory
+# ocr = PaddleOCR(use_angle_cls=False, lang='en') # need to run only once to download and load model into memory
+# layout_engine = PPStructure(recovery=False, layout=True, table=True, ocr=False, show_log=False) # need to run only once to download and load model into memory
 
 
 
@@ -36,15 +38,56 @@ class TableTools:
                     output_path = f"{output_folder}/{img_name}"
                     image.save(output_path, 'JPEG')
 
-    def structured_ocr(self, img_file_path, ocr=layout_engine):
+    # def structured_ocr(self, img_file_path, ocr=layout_engine):
+    #     """
+    #     This method performs an structure deetction, table transcription and OCR on a single image
+    #     Args:
+    #         img_file_path (str): image file path
+    #         ocr (PaddleOCR, optional): PaddleStructure engine object. Defaults to layout_engine.
+    #     Returns:
+    #         str: output ocr object
+    #     """
+    #     img = cv2.imread(img_file_path)
+    #     return ocr(img)
+
+    def crop_tables(data_directory: str, 
+                    conf: float = 0.25,
+                    iou: float = 0.45,
+                    agnostic_nms: bool = False,
+                    max_det: int = 1000,
+                    threshold: float = 0.8,
+                    offset: int = 20) -> None:
+        
         """
-        This method performs an structure deetction, table transcription and OCR on a single image
+        This method crops tables from images using YOLOv8
         Args:
-            img_file_path (str): image file path
-            ocr (PaddleOCR, optional): PaddleStructure engine object. Defaults to layout_engine.
-        Returns:
-            str: output ocr object
+            data_directory (str): directory of images
         """
-        img = cv2.imread(img_file_path)
-        return ocr(img)
+        model = YOLO('foduucom/table-detection-and-extraction')
+
+        # set model parameters
+        model.overrides['conf'] = conf  # NMS confidence threshold
+        model.overrides['iou'] = iou  # NMS IoU threshold
+        model.overrides['agnostic_nms'] = agnostic_nms  # NMS class-agnostic
+        model.overrides['max_det'] = max_det  # maximum number of detections per image
+
+        files = glob.glob(data_directory + "**/**", recursive=True)
+        files = [file for file in files if file.endswith(".jpg")]
+
+        for filename in files:
+            print(f"Cropping tables from {filename}")
+            results = model.predict(filename)
+            boxes, mask = results[0].boxes.xyxy.numpy(), results[0].boxes.conf.numpy() >= threshold
+            valid_boxes = boxes[mask]
+            loaded_img = Image.open(filename)
+            for i, box in enumerate(valid_boxes):
+                cropped_table = loaded_img.crop((box[0]-offset, 
+                                                box[1]-offset, 
+                                                box[2]+offset, 
+                                                box[3]+offset))
+                output_dir = filename.partition('images')[0]
+                page_no = filename.partition('images')[-1].replace("/", "").replace(".jpg", "")
+                cropped_table.save(f"{output_dir}cropped_tables/page_{page_no}_table_{i}.jpg")
+
+
 
