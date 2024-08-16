@@ -1,5 +1,3 @@
-import os
-import sys
 import yaml
 import glob
 from typing import List, Dict
@@ -7,10 +5,10 @@ from sec_edgar_downloader import Downloader
 import pdfkit
 
 
-class SEC_Tools:
+class SECTools:
 
     def __init__(self,
-                config: dict):
+                config: dict) -> None:
         
         self.configs = self.load_config(config)
 
@@ -62,7 +60,8 @@ class SEC_Tools:
         with open(filename, 'r') as file:
 
             return file.read()
-        
+    
+    #TODO: Better handling of xbrl content.
     def convert_txt_to_pdf(self,
                            data_directory: str,
                            options: Dict[str, str] = {
@@ -87,7 +86,7 @@ class SEC_Tools:
                                 filename.split(".txt")[0] + '.pdf', 
                                 options=options)
             except OSError as e:
-                print("f Error: {e} occurred.  Check outputs.")
+                print(f"Error: {e} occurred.  Check outputs.")
 
 
 

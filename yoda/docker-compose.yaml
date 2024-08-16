@@ -1,0 +1,8 @@
+version: '1'
+services:
+  data_extraction_paddle_service:
+    build: 
+      context: ../
+      dockerfile: yoda/docker/PaddleDockerfile
+    ports:
+      - "8888:8888"
