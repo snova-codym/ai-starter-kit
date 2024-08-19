@@ -2,7 +2,6 @@ import os
 import sys
 import yaml
 from typing import List 
-from pydantic import BaseModel, Field
 from sec_edgar_downloader import Downloader
 from xbrl import XBRLParser
 from langchain.memory import ConversationSummaryMemory
@@ -43,7 +42,6 @@ class SecFiling:
         self.config = config
         self.vector_store = None
         self.llm = None
-        self.qa_chain = None
         self.conversational_chain = None
         self.comparative_process = None
         self.retriever = None
