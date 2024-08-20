@@ -1,5 +1,6 @@
 import os
 import cv2
+import glob
 import numpy as np
 from pathlib import Path
 from PIL import Image
@@ -7,11 +8,8 @@ from pdf2image import convert_from_path
 import random
 import subprocess
 import time
+from typing import List
 from ultralyticsplus import YOLO
-# from paddleocr import PaddleOCR,  PPStructure
-
-# ocr = PaddleOCR(use_angle_cls=False, lang='en') # need to run only once to download and load model into memory
-# layout_engine = PPStructure(recovery=False, layout=True, table=True, ocr=False, show_log=False) # need to run only once to download and load model into memory
 
 DOCUMENT_PREFIX_LANDSCAPE = r'''\documentclass[8pt]{article}
 \usepackage[landscape, margin={MARGIN}in]{geometry} % Sets the document to landscape mode
@@ -84,18 +82,6 @@ class TableTools:
                     output_path = f"{output_folder}/{img_name}"
                     image.save(output_path, 'JPEG')
 
-    # def structured_ocr(self, img_file_path, ocr=layout_engine):
-    #     """
-    #     This method performs an structure deetction, table transcription and OCR on a single image
-    #     Args:
-    #         img_file_path (str): image file path
-    #         ocr (PaddleOCR, optional): PaddleStructure engine object. Defaults to layout_engine.
-    #     Returns:
-    #         str: output ocr object
-    #     """
-    #     img = cv2.imread(img_file_path)
-    #     return ocr(img)
-
     def crop_tables(data_directory: str, 
                     conf: float = 0.25,
                     iou: float = 0.45,
@@ -123,7 +109,10 @@ class TableTools:
         for filename in files:
             print(f"Cropping tables from {filename}")
             results = model.predict(filename)
-            boxes, mask = results[0].boxes.xyxy.numpy(), results[0].boxes.conf.numpy() >= threshold
+            
+            boxes, mask = results[0].boxes.xyxy.numpy(), 
+            results[0].boxes.conf.numpy() >= threshold
+            
             valid_boxes = boxes[mask]
             loaded_img = Image.open(filename)
             output_folder = filename.partition('images')[0] + "cropped_tables/"
@@ -137,20 +126,35 @@ class TableTools:
                 output_path = f"{output_folder}/{page_no}_table_{i}.jpg"
                 cropped_table.save(output_path, "JPEG")
 
-    def convert_tsv_to_latex(self, 
-                             text,
-                             randomize_colors: bool = True,
-                             ) -> str:
-
+    def replace_special_to_latex(self, 
+                                 text: str) -> str:
+        
         text = text.replace("%", "\\%")
         text = text.replace("_", "\\_")
         text = text.replace("*", "\\quad ")
+        text = text.replace("$", "\\$")
+
+        return text
+    
+    def _return_colors(self) -> List[str]:
+
+        colors = ["\\definecolor{mycolor}{RGB}{150,210,255}\n",
+                  "\\definecolor{mycolor}{RGB}{210,210,210}\n",
+                  "\\definecolor{mycolor}{RGB}{175,250,180}\n",
+                  "\\definecolor{mycolor}{RGB}{250,250,180}\n"]
+        
+        return colors
+
+    def convert_tsv_to_latex(self, 
+                             text: str,
+                             randomize_colors: bool = True,
+                             ) -> str:
+
+        text = self.replace_special_to_latex(text)
 
         latex_text = ""
         
         r = np.random.uniform(0, 1)
-        print("---R---")
-        print(r)
 
         for i ,line in enumerate(text.splitlines()):
 
@@ -169,12 +173,14 @@ class TableTools:
             latex_text += line
 
         header1 = "\\usepackage{colortbl}\n\\usepackage{xcolor}\n" 
-        color = "\\definecolor{mycolor}{RGB}{150,210,255}\n"
+        colors = self._return_colors() #Simple return method to declutter
+        print(colors)
         header2 = "\\begin{document}\n\\begin{table}\n"
 
-        header = header1 + color + header2
+        header = header1 + np.random.choice(colors) + header2
 
-        column_style = "\\begin{tabular}{| l c c |}\n\\hline\n"
+        # column_style = "\\begin{tabular}{| l c c |}\n\\hline\n"
+        column_style = "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n"
         footer = "\\hline\n\\end{tabular}\n\\end{table}\n\\end{document}"
 
         formatted_latex_text = header + column_style + latex_text + footer
@@ -248,23 +254,19 @@ class TableTools:
         cropped_table = image[max(0, y-random.randint(10, 100)):min(y+h+random.randint(10, 100), height), 
                             max(0, x-random.randint(10, 100)):min(x+w+random.randint(10, 100), width)]
         
-        # keeptrying = True
-        # counter = 0
-        # while keeptrying:
-        #     print("---KEEPTRYING---")
-        #     print(keeptrying)
-        #     try:
-        #         cv2.imwrite(image_path, cropped_table)
-        #         keeptrying = False
-        #         print("---KEEPTRYING---")
-        #         print(keeptrying)
-        #     except Exception as e:
-        #         print("---EXCEPTION---")
-        #         print(e)
-        #         time.sleep(0.5)
-        #         counter += 1
-        #         if counter >= 10:
-        #             break
+        keeptrying = True
+        counter = 0
+        while keeptrying:
+            try:
+                cv2.imwrite(image_path, cropped_table)
+                keeptrying = False
+            except Exception as e:
+                print("---EXCEPTION---")
+                print(e)
+                time.sleep(0.5)
+                counter += 1
+                if counter >= 10:
+                    break
 
         cv2.imwrite(image_path, cropped_table)
 
