@@ -1,6 +1,7 @@
 import os
 import cv2
 import glob
+import logging
 import numpy as np
 from pathlib import Path
 from PIL import Image
@@ -10,6 +11,8 @@ import subprocess
 import time
 from typing import List
 from ultralyticsplus import YOLO
+
+logging.basicConfig(level=logging.INFO)
 
 DOCUMENT_PREFIX_LANDSCAPE = r'''\documentclass[8pt]{article}
 \usepackage[landscape, margin={MARGIN}in]{geometry} % Sets the document to landscape mode
@@ -72,10 +75,11 @@ class TableTools:
             files = [file for file in files if file.endswith(".pdf")]
 
             for filename in files:
-                print(f"Converting {filename} to a folder of images in the same location")
+                logging.info(f"Converting {filename} to a folder of images in the same location")
 
                 images = convert_from_path(filename)
-                output_folder = filename.split('.')[0] + "/images"
+                base_folder = filename.split('.')[0]
+                output_folder = os.join(base_folder, "images")
                 os.makedirs(output_folder, exist_ok=True)
                 for i, image in enumerate(images):
                     img_name=f"page_{i}.jpg"
@@ -141,7 +145,8 @@ class TableTools:
         colors = ["\\definecolor{mycolor}{RGB}{150,210,255}\n",
                   "\\definecolor{mycolor}{RGB}{210,210,210}\n",
                   "\\definecolor{mycolor}{RGB}{175,250,180}\n",
-                  "\\definecolor{mycolor}{RGB}{250,250,180}\n"]
+                  "\\definecolor{mycolor}{RGB}{250,250,180}\n",
+                  "\\definecolor{mycolor}{RGB}{176,247,171}\n"]
         
         return colors
 
@@ -179,8 +184,11 @@ class TableTools:
 
         header = header1 + np.random.choice(colors) + header2
 
+        # column_style = "\\begin{tabular}{| >{\\color{blue}}l c c |}\n\\hline\n"
+        # column_style = "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n"
+        # column_style = "\\begin{tabular}{| l c c c |}\n\\hline\n"
         # column_style = "\\begin{tabular}{| l c c |}\n\\hline\n"
-        column_style = "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n"
+        column_style = "\\begin{tabular}{| l c c r c c r |}\n\\hline\n"
         footer = "\\hline\n\\end{tabular}\n\\end{table}\n\\end{document}"
 
         formatted_latex_text = header + column_style + latex_text + footer
@@ -298,8 +306,9 @@ class TableTools:
         subprocess.run(['mv', 'table.tex', tex_filepath])
         subprocess.run(['mv', 'table.pdf', pdf_filepath])
 
+        #TODO: Randomize DPI
         images = convert_from_path(pdf_filepath, dpi=250)
-        image = images[0]
+        image = images[-1] # Sometimes more than one page is generated, so we take the last one
         image_size = image.size  # This returns a tuple (width, height)
         print(image_size)
         image.save(img_filepath, 'JPEG')
