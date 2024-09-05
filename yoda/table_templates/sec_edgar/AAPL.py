@@ -1,7 +1,7 @@
 synth_tables = []
 
 # Template 1: AAPL_Revenue_simple_columns
-{"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
+ex1 = {"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
 
 "tsv_formatted": """\tThree Months Ended\t
 \tDecember 31,\tDecember 25
@@ -14,8 +14,10 @@ Services(3)\t***20,766\t***19,516
 *Total net sales\t**117,154\t**123,945
 """}
 
+synth_tables.append(ex1)
+
 # Template 2: AAPL_cash_market_secs
-{"colums": "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n",
+ex2 = {"colums": "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n",
 
 "tsv_formatted": """\t\t\t\t\tCash and\tCurrent\tNon-Current
 \tAdjusted\tUnrealized\tUnrealized\tFair\tCash\tMarketable\tMarketable
@@ -44,8 +46,10 @@ Level 2:\t\t\t\t\t\t\t
 \\hline\t\t\t\t\t\t\t
 """}
 
+synth_tables.append(ex2)
+
 # Template 3: AAPL_Country_Revenues
-{"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
+ex3 = {"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
  
 "tsv_formatted": """\t*****Three Months\t
 \tDecember 31,\tDecember 25,
@@ -71,8 +75,10 @@ Rest of Asia Pacific:*********\t\t
 *Operating income\t$**3,851\t$**3,995
 """}
 
+synth_tables.append(ex3)
+
 # Template 4: AAPL_XML1
-{"columns": "\\begin{tabular}{| >{\\color{blue}}l c c |}\n\\hline\n",
+ex4 = {"columns": "\\begin{tabular}{| >{\\color{blue}}l c c |}\n\\hline\n",
  
  "tsv_formatted": """Diluted (in dollars per share)\t$*1.88\t$*2.10
 \\textbf{Shares used in computing earnings per share:}\t\t
@@ -86,8 +92,10 @@ Net sales\t20,766\t19,516
 Cost of sales\t*$*6,057\t*$*5,393
 """}
 
+synth_tables.append(ex4)
+
 # Template 5: AAPL_Condensed_Consolidated_Balance_Sheets - Became too large, incomplete rows
-{"columns": "\\begin{tabular}{| l c c c |}\n\\hline\n",
+ex5 = {"columns": "\\begin{tabular}{| l c c c |}\n\\hline\n",
  
  "tsv_formatted": """\t\tApril 1,\tSeptember 24,
 \t\t2023\t2022
@@ -130,8 +138,10 @@ Non-current liabilities:***********\t\t\t
 ***Total liabilities***********\t\t*****270,002\t*****302,083
 """}
 
+synth_tables.append(ex5)
+
 # Template AAPL_Condensed_Consolidated_Financial_Statements
-{"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
+ex6 = {"columns": "\\begin{tabular}{| l c c |}\n\\hline\n",
 
 "tsv_formatted": """\\textbf{Inventories}\t\t
 \t\\textbf{April 1,}\t\\textbf{September 24,}
@@ -153,9 +163,11 @@ Accumulated deprecation and amorization**************\t****(69,668)\t****(72,340
 *Total property, plant, and equipment, net**********\t$****43,398\t$****42,117
 """}
 
+synth_tables.append(ex6)
+
 # Template APPL_Products_and_Services_Performance
 
-{"columns": "\\begin{tabular}{| l c c r c c r |}\n\\hline\n",
+ex7 = {"columns": "\\begin{tabular}{| l c c r c c r |}\n\\hline\n",
  
 "tsv_formatted": """\\textbf{Products and Services Performance}\t\t\t\t\t\t
 \t\t\\textbf{Three Months Ended}\t\t\\textbf{Six Months Ended}\t\t
@@ -166,10 +178,12 @@ Accumulated deprecation and amorization**************\t****(69,668)\t****(72,340
 Net sales by category\t\t\t\t\t\t
 *iPhone***\t$***51,334\t$***50,570\t*****2%\t$**117,109\t$**122,198\t****(4)%
 *Mac***\t*****7,168\t****10,435\t****(31)%\t****14,903\t****21,287\t***(30)%
-*iPad***\t*****6,678\t****7,646\t****(13)%\t***16,066\t***14,894\t*****8%
+*iPad***\t*****6,670\t****7,646\t****(13)%\t***16,066\t***14,894\t*****8%
 *Wearables, Home and Accessories\t*****8,757\t****8,806\t*****(1)%\t***22,239\t***23,507\t***(5)%
 *Services***\t****20,907\t***19,821\t*******5%\t***41,673\t***39,337\t****6%
 \\hline\t\t\t\t\t\t
 **Total new sales**\t$***94,836\t$***97,278\t*****(3)%\t$**211,990\t$**221,223\t*****(4)%
 """}
+
+synth_tables.append(ex7)
 

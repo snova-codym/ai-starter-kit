@@ -353,7 +353,7 @@ class TableTools:
         
         transformations_map = {
             "RandomBrightnessContrast": A.RandomBrightnessContrast(p=0.5),
-            "Blur": A.Blur(p=0.5, blur_limit=(3,5)),
+            "Blur": A.Blur(p=0.5, blur_limit=(1,3)),
             "Downscale": A.Downscale(p=0.5, scale_min=0.55, scale_max=0.85),
             "GaussNoise": A.GaussNoise(p=0.5, var_limit=(50.0, 250.0)),
             "ISONoise": A.ISONoise(p=0.2, color_shift=(0.1, 0.5), intensity=(0.1, 0.5)),
@@ -408,7 +408,7 @@ class TableTools:
 
         #TODO: Randomize DPI
         if randomize_dpi:
-            images = convert_from_path(pdf_filepath, dpi=np.random.choice([75, 120, 250, 300]))
+            images = convert_from_path(pdf_filepath, dpi=np.random.choice([90, 120, 250, 300]))
         else:
             images = convert_from_path(pdf_filepath, dpi=250)
         image = images[-1] # Sometimes more than one page is generated, so we take the last one
