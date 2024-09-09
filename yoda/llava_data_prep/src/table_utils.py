@@ -493,11 +493,11 @@ class TableTools:
             TypeError(f"Expected list, got {type(font_type)}.")
 
         assert all(font_type for font_type in ["lmodern",
-                            "times",
-                            "helvet", 
-                            "courier",
-                            "mathpazo",
-                            "newcent"]), \
+                                                "times",
+                                                "helvet", 
+                                                "courier",
+                                                "mathpazo",
+                                                "newcent"]), \
             ValueError(f"Invalid font type: {font_type}.")
         
         # Set formatting.

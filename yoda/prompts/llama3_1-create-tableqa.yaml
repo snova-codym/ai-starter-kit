@@ -1,0 +1,19 @@
+_type: prompt
+input_types: {}
+input_variables:
+- table
+name: null
+output_parser: null
+partial_variables: {}
+template: "<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an intelligent \
+    \ ai agent that takes a table/string and creates a random single query-answer pair. \
+    \ Do not refer to column, row, etc.  Use natural langugage, only. \
+    \ Choose a random row and column to create the query-answer pair from. \
+    \ Never change the sign of a value extracted from the table.  Never negate a number. \
+    \ Never ask questions that would result in a negative number. \
+    \ Provide the output in valid json output. \
+    \ The JSON should have 2 keys: 'query', and 'answer'. \
+    \ Here is the table: {table} \
+    \ \n <|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+template_format: f-string
+validate_template: false
