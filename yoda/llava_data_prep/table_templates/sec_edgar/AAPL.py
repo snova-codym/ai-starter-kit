@@ -17,7 +17,7 @@ Services(3)\t***20,766\t***19,516
 synth_tables.append(ex1)
 
 # Template 2: AAPL_cash_market_secs
-ex2 = {"colums": "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n",
+ex2 = {"columns": "\\begin{tabular}{| l c c c c c c c |}\n\\hline\n",
 
 "tsv_formatted": """\t\t\t\t\tCash and\tCurrent\tNon-Current
 \tAdjusted\tUnrealized\tUnrealized\tFair\tCash\tMarketable\tMarketable
